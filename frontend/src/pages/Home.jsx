@@ -3,24 +3,28 @@ import Restaurant from '../components/Restaurant'
 import Dishes from '../components/Dishes'
 import { useState, useEffect } from 'react'
 import { useAddress } from '../context/AddressContext'
+import { dishes as defaultDishes, restaurants as defaultRestaurants } from '../data/restaurants'
+import { fetchApi } from '../data/api'
 
 function Home() {
   const navigate = useNavigate()
   const { selected } = useAddress()
   const [query, setQuery] = useState('')
-  const [restaurants, setRestaurants] = useState([])
-  const [categories, setCategories] = useState([])
+  const [restaurants, setRestaurants] = useState(defaultRestaurants)
+  const [categories, setCategories] = useState(defaultDishes)
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/restaurants')
-      .then((response) => response.json())
-      .then((data) => setRestaurants(data))
-      .catch((error) => console.error('Error fetching restaurants:', error))
+    fetchApi('/api/restaurants')
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setRestaurants(data)
+      })
+      .catch(() => {})
 
-    fetch('http://localhost:8080/api/categories')
-      .then((response) => response.json())
-      .then((data) => setCategories(data))
-      .catch((error) => console.error('Error fetching categories:', error))
+    fetchApi('/api/categories')
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setCategories(data)
+      })
+      .catch(() => {})
   }, [])
 
   const visble = restaurants.filter((restaurant) => {

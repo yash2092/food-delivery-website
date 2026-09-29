@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: food-delivery-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/restaurants
+    envVars:
+      - key: CORS_ALLOWED_ORIGIN_PATTERNS
+        value: https://*.vercel.app

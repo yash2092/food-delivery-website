@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import Restaurant from "../components/Restaurant"
+import { restaurants as defaultRestaurants } from "../data/restaurants"
+import { fetchApi } from "../data/api"
 
 function DishRestaurants() {
   const { name } = useParams()
   const dishName = decodeURIComponent(name)
-  const [restaurants, setRestaurants] = useState([])
+  const [restaurants, setRestaurants] = useState(defaultRestaurants)
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/restaurants")
-      .then((response) => response.json())
-      .then((data) => setRestaurants(data))
-      .catch(() => setRestaurants([]))
+    fetchApi("/api/restaurants")
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setRestaurants(data)
+      })
+      .catch(() => {})
   }, [])
 
   const q = dishName.toLowerCase()

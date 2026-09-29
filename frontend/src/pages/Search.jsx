@@ -1,22 +1,26 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import Restaurant from "../components/Restaurant"
+import { dishes as defaultDishes, restaurants as defaultRestaurants } from "../data/restaurants"
+import { fetchApi } from "../data/api"
 
 function Search() {
   const [query, setQuery] = useState("")
-  const [restaurants, setRestaurants] = useState([])
-  const [categories, setCategories] = useState([])
+  const [restaurants, setRestaurants] = useState(defaultRestaurants)
+  const [categories, setCategories] = useState(defaultDishes)
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/restaurants")
-      .then((res) => res.json())
-      .then((data) => setRestaurants(data))
-      .catch(() => setRestaurants([]))
+    fetchApi("/api/restaurants")
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setRestaurants(data)
+      })
+      .catch(() => {})
 
-    fetch("http://localhost:8080/api/categories")
-      .then((res) => res.json())
-      .then((data) => setCategories(data))
-      .catch(() => setCategories([]))
+    fetchApi("/api/categories")
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setCategories(data)
+      })
+      .catch(() => {})
   }, [])
 
   const q = query.trim().toLowerCase()

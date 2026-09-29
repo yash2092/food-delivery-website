@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAddress } from "../context/AddressContext"
+import { fetchApi } from "../data/api"
 
-const API = "http://localhost:8080/api/auth"
 const inputClass =
   "mt-1 w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-base text-white placeholder-zinc-500 outline-none transition focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
 
@@ -41,21 +41,19 @@ function Profile() {
     }
     lastSent.current = mobile
 
-    fetch(`${API}/check-mobile`, {
+    fetchApi("/api/auth/check-mobile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ mobile }),
     })
-      .then((res) => res.json())
       .then((data) => setExists(data.exists === "true"))
       .catch(() => setMessage("Backend not running"))
 
-    fetch(`${API}/send-otp`, {
+    fetchApi("/api/auth/send-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ mobile }),
     })
-      .then((res) => res.json())
       .then((data) => setMessage(data.message))
       .catch(() => setMessage("Could not send OTP"))
   }, [isValidMobile, mobile])
@@ -66,12 +64,11 @@ function Profile() {
     }
     lastCheckedCode.current = code
 
-    fetch(`${API}/verify-otp`, {
+    fetchApi("/api/auth/verify-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ mobile, code }),
     })
-      .then((res) => res.json())
       .then((data) => {
         setMessage(data.message)
         if (data.exists === "true" && data.id) {
@@ -92,12 +89,11 @@ function Profile() {
   }, [code, isValidMobile, mobile])
 
   const createAccount = () => {
-    fetch(`${API}/register`, {
+    fetchApi("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ mobile, name, email, code }),
     })
-      .then((res) => res.json())
       .then((data) => {
         setMessage(data.message)
         if (data.id) {

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { useCart } from "../context/CartContext"
+import { restaurants as defaultRestaurants } from "../data/restaurants"
+import { fetchApi } from "../data/api"
 
 function Menu() {
   const { id } = useParams()
@@ -11,14 +13,13 @@ function Menu() {
 
   useEffect(() => {
     setLoading(true)
-    fetch(`http://localhost:8080/api/restaurants/${id}`)
-      .then((response) => response.json())
+    fetchApi(`/api/restaurants/${encodeURIComponent(id)}`)
       .then((data) => {
-        setRestaurant(data)
+        setRestaurant(data?.id ? data : defaultRestaurants.find((item) => String(item.id) === String(id)))
         setLoading(false)
       })
       .catch(() => {
-        setRestaurant(null)
+        setRestaurant(defaultRestaurants.find((item) => String(item.id) === String(id)))
         setLoading(false)
       })
   }, [id])

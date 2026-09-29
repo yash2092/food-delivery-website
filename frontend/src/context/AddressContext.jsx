@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react"
+import { fetchApi } from "../data/api"
 
 const AddressContext = createContext(null)
 const SELECTED_KEY = "selectedAddress"
@@ -25,8 +26,7 @@ export function AddressProvider({ children }) {
   const load = () => {
     const user = readUser()
     if (user?.id) {
-      fetch(`http://localhost:8080/api/addresses?userId=${user.id}`)
-        .then((res) => res.json())
+      fetchApi(`/api/addresses?userId=${user.id}`)
         .then((data) => setAddresses(Array.isArray(data) ? data : []))
         .catch(() => setAddresses([]))
       return
@@ -50,12 +50,11 @@ export function AddressProvider({ children }) {
   const addAddress = (fields) => {
     const user = readUser()
     if (user?.id) {
-      return fetch("http://localhost:8080/api/addresses", {
+      return fetchApi("/api/addresses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...fields, userId: Number(user.id) }),
       })
-        .then((res) => res.json())
         .then((saved) => {
           setAddresses((prev) => [...prev, saved])
           selectAddress(saved)
@@ -73,7 +72,7 @@ export function AddressProvider({ children }) {
   const removeAddress = (id) => {
     const user = readUser()
     if (user?.id) {
-      fetch(`http://localhost:8080/api/addresses/${id}`, { method: "DELETE" }).catch(
+      fetchApi(`/api/addresses/${id}`, { method: "DELETE" }).catch(
         () => {}
       )
     }
